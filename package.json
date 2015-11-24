@@ -5,6 +5,7 @@
   "main": "game-of-comonads.js",
   "scripts": {
     "build": "watchify game-of-comonads.js -v -o bundle.js -t [ babelify --presets [ es2015 stage-0 ] ]",
+    "build:worker": "watchify worker.js -v -o worker-bundle.js -t [ babelify --presets [ es2015 stage-0 ] ]",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -19,6 +20,7 @@
   "homepage": "https://github.com/puffnfresh/game-of-comonads.js#readme",
   "dependencies": {
     "lodash": "^3.10.1",
+    "most": "^0.16.0",
     "ramda": "github:ramda/ramda#master",
     "ramda-fantasy": "^0.4.1"
   },
