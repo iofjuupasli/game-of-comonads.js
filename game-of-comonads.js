@@ -1,4 +1,6 @@
 'use strict';
+import most from 'most';
+import { map, forEach, pipe, chain } from 'ramda';
 import { IO } from 'ramda-fantasy';
 import { size, scale } from './config';
 
@@ -19,9 +21,20 @@ const drawBoard = board => new IO(() => {
     board.map((v, { x, y }) => v && canvas.fillRect(x, y, 1, 1))
 });
 
-setup.runIO();
-
-const worker = new Worker('./worker-bundle.js');
-worker.addEventListener('message', state => {
-    drawBoard(new Board(state.data)).runIO()
+const createWorker = new IO(() => {
+    return new Worker('./worker-bundle.js');
 });
+
+chain(() =>
+        map(pipe(
+            worker => most.create(add => {
+                worker.addEventListener('message', e => add(e.data));
+                return () => worker.terminate();
+            }),
+            map(state => new Board(state)),
+            map(drawBoard),
+            forEach(draw => draw.runIO())
+        ))(createWorker),
+        setup
+    )
+    .runIO();
