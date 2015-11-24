@@ -3,10 +3,7 @@ import { empty, pipe, map, times, chain, F, always, compose } from 'ramda';
 
 import { IO } from 'ramda-fantasy';
 
-const element = document.getElementById('game-of-comonads');
-const canvas = element.getContext('2d');
 const size = 400;
-const scale = 2;
 
 class Vector {
     constructor(x, y) {
@@ -90,35 +87,27 @@ const fork = io => new IO(() =>
     setTimeout(() => io.runIO(), 0)
 );
 
-const setup = new IO(() => {
-    element.width = size * scale;
-    element.height = size * scale;
-    canvas.scale(scale, scale);
-});
-
-const generateBoard = () => new IO(() =>
+const generateBoard = new IO(() =>
     pipe(
         empty,
         map(() => Math.random() > 0.5)
     )(Board)
 );
 
-const drawBoard = board => new IO(() => {
-    canvas.clearRect(0, 0, size, size);
-    board.map((v, { x, y }) => v && canvas.fillRect(x, y, 1, 1))
-});
+const emitNewState = board => new IO(() =>
+    this.postMessage(board.state)
+);
 
 const loop = board =>
     pipe(
-        drawBoard,
+        emitNewState,
         map(always(board)),
         map(map(rules)),
         chain(pipe(loop, fork))
     )(board);
 
 const main = pipe(
-    chain(generateBoard),
     chain(loop)
-)(setup);
+)(generateBoard);
 
 main.runIO();
