@@ -7,9 +7,4 @@ export default class Vector {
     concat(vec) {
         return new Vector(this.x + vec.x, this.y + vec.y);
     }
-
-    isInBounds() {
-        return this.x >= 0 && this.y >= 0 &&
-            this.x < size && this.y < size;
-    }
 }

@@ -1,5 +1,4 @@
 import { times, always, F } from 'ramda';
-import { size } from './config';
 
 import Vector from './Vector';
 
@@ -17,6 +16,7 @@ export default class Board {
     map(f) {
         // bottleneck optimization
         const state = this.state;
+        const size = state.length;
         let result = Array(size);
         let x = -1;
         let y = -1;
@@ -46,10 +46,11 @@ export default class Board {
     }
 
     get({ x, y }) {
+        const size = this.state.length;
         return this.state[(x + size) % size][(y + size) % size];
     }
 
-    static empty() {
+    static empty(size) {
         return new Board(times(always(times(F)(size)))(size));
     }
 }
